@@ -1,0 +1,43 @@
+<html>
+    <script>
+        var slantCssTemplate = 'body {transform: rotate(DEGREESdeg); -webkit-transform: rotate(DEGREESdeg); -moz-transform: rotate(DEGREESdeg); -o-transform: rotate(DEGREESdeg); -ms-transform: rotate(DEGREESdeg);}';
+
+        var slanted = false;
+        localStorage.slantAmt = 0.5;
+
+        chrome.browserAction.onClicked.addListener(function(tab) {
+            if (slanted) {
+                slanted = false;
+
+                var iconPath = "upright.png";
+                var slantCss = slantCssTemplate.replace(/DEGREES/g, "0");
+            }
+            else {
+                slanted = true;
+
+                var iconPath = "slanted.png";
+                var slantCss = slantCssTemplate.replace(/DEGREES/g, localStorage.slantAmt.toString());
+            }
+
+            chrome.browserAction.setIcon({path: iconPath});
+
+            // slant/unslant all tabs in all windows
+            chrome.windows.getAll({populate: true}, function(windows) {
+                for (var i = 0; i < windows.length; i++) {
+                    var curTabs = windows[i].tabs;
+                    for (var j = 0; j < curTabs.length; j++) {
+                        chrome.tabs.insertCSS(curTabs[j].id, {code: slantCss});
+                    }
+                }
+            });
+
+            // slant/unslant whenever a tab changes
+            chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+                // only do it when complete so it doesn't repeat
+                if (changeInfo.status == "complete") {
+                    chrome.tabs.insertCSS(tabId, {code: slantCss});
+                }
+            });
+        });
+    </script>
+</html>

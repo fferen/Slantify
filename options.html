@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>Slantify options</title>
+    </head>
+    <script type="text/javascript">
+        function saveOptions(evt) {
+            evt.preventDefault();
+
+            var newAngle = document.getElementById("angle").value;
+            if (isNaN(newAngle)) {
+                alert("Error: not a number.");
+            }
+            localStorage.slantAmt = parseFloat(newAngle);
+            document.getElementById("status").innerHTML = "Saved";
+        }
+    </script>
+    <body>
+        Slant angle in degrees (clockwise is positive):
+        <form onsubmit="saveOptions(evt);">
+            <input id="angle" />
+            <br>
+            <button>Save</button>
+        </form>
+        <span id="status" />
+    </body>
+</html>
